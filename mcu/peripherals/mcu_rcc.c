@@ -25,7 +25,15 @@ void mcu_rcc_init(void)
 			| RCC_AHBENR_GPIODEN;
 	RCC->APB1ENR |= RCC_APB1ENR_LCDEN | RCC_APB1ENR_PWREN | RCC_APB1ENR_I2C1EN;
 
-	// MCO = MSI
+	// разрешаем работу генератора HSI
+	RCC->CR |= RCC_CR_HSION;
+
+	// ожидаем окончания стабилизации
+	while (!(RCC->CR & RCC_CR_HSIRDY))
+	{
+	}
+
+	// выводим сигнал HSI генератора на выход MCO
 	RCC->CFGR &= ~RCC_CFGR_MCOSEL;
-	RCC->CFGR |= RCC_CFGR_MCOSEL_MSI;
+	RCC->CFGR |= RCC_CFGR_MCOSEL_HSI;
 }
